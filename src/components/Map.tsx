@@ -6,11 +6,11 @@ const Map: React.FC = () => {
   let map: mapboxgl.Map | null = null;
   let draw: MapboxDraw | null = null;
   let poly: any[] = [];
+  let pastPoly: any[] = [];
   let name: string = '';
   let polyId: string = '';
   let allPolys: any[] = [];
-  let isEditting: boolean = false;
-
+  
   useEffect(() => {
     mapboxgl.accessToken = 'pk.eyJ1Ijoia3Jpc2F3eWVyciIsImEiOiJjbG1vZHFiY2wxMDJ5MmxwbjVwNm5qZnVzIn0.-toq3H6oxw1OCdkI2ZERsA';
 
@@ -67,106 +67,154 @@ const Map: React.FC = () => {
   };
 
   const handleSaveButtonClick = () => {
-    if (name && poly.length > 0) {
-      const newPolygonItem = { id: poly[poly.length - 1].id, name: name, polygon: poly[poly.length - 1].geometry };
-      allPolys.push(newPolygonItem);
-      name = '';
-      poly = [];
-      renderPolygons();
+    if (name) {
+      let newPolygonItem;
+  
+      if (poly.length > 0) {
+        newPolygonItem = { id: poly[poly.length - 1].id, name: name, polygon: poly[poly.length - 1].geometry };
+      } else if (pastPoly) {
+        newPolygonItem = { id: pastPoly.id, name: name, polygon: pastPoly.polygon };
+      }
+      
+      if (newPolygonItem) {
+        if (allPolys.some(item => item.id === polyId)) {
+          allPolys = allPolys.filter(item => item.id !== polyId);
+        }
+  
+        allPolys.push(newPolygonItem);
+        name = '';
+        poly = [];
+        renderPolygons();
+        if (draw) {
+          draw.deleteAll();
+        }
+      } else {
+        console.error('No polygon data found to save.');
+      }
+    }
+  };
+  
+  const renderPolygons = () => {
+    const listContainer1 = document.getElementById('title');
+    if (listContainer1) {
+      listContainer1.innerHTML = '';
+      allPolys.forEach((item) => {
+        const polyTitle = document.createElement('div');
+        polyTitle.textContent = `${item.name}`;
+        listContainer1.appendChild(polyTitle);
+      });
+    }
+    const listContainer2 = document.getElementById('edit');
+    if (listContainer2) {
+      listContainer2.innerHTML = '';
+      allPolys.forEach((item) => {
+        const editButton = document.createElement('button');
+        editButton.textContent = `Edit`;
+        editButton.addEventListener('click', () => editPolygon(item));
+        listContainer2.appendChild(editButton);
+      });
+    }
+    const listContainer3 = document.getElementById('delete');
+    if (listContainer3) {
+      listContainer3.innerHTML = '';
+      allPolys.forEach((item) => {
+        const deleteButton = document.createElement('button');
+        deleteButton.textContent = `Delete`;
+        deleteButton.addEventListener('click', () => deletePolygon(item));
+        listContainer3.appendChild(deleteButton);
+      });
+    }
+  };
+
+  const editPolygon = (item: any) => {  
+    pastPoly = item
+    if (item && item.polygon && item.polygon.coordinates) {
+      polyId = item.id;
       if (draw) {
         draw.deleteAll();
       }
-    }
-  };
-
-  const renderPolygons = () => {
-    const listContainer = document.getElementById('32544');
-    if (listContainer) {
-      listContainer.innerHTML = '';
-      allPolys.forEach((item) => {
-        const div = document.createElement('div');
-        const editButton = document.createElement('button');
-        editButton.textContent = `edit ${item.name}`;
-        editButton.addEventListener('click', () => editPolygon(item));
-        div.appendChild(editButton);
-        listContainer.appendChild(div);
-      });
-    }
-  };
-
-  /* const editPolygon = (item: any) => {
-    isEditting = true
-    polyId = item.id
-    name = item.name
-    poly = item.polygon
-
-    console.log(isEditting)
-    console.log(polyId)
-    console.log(name)
-    console.log(poly)
-  }; */
-
-  const editPolygon = (item: any) => {
-    const coordinates = item.polygon.coordinates[0];
-    const initialPolygonData = {
-      type: 'FeatureCollection',
-      features: [
-        {
-          type: 'Feature',
-          properties: {},
-          geometry: {
-            type: 'Polygon',
-            coordinates: [coordinates]
+  
+      const inputElement = document.querySelector('input[type="text"]');
+      if (inputElement) {
+        inputElement.value = item.name;
+      }
+  
+      name = item.name;
+  
+      const coordinates = item.polygon.coordinates[0];
+      const initialPolygonData = {
+        type: 'FeatureCollection',
+        features: [
+          {
+            type: 'Feature',
+            properties: {},
+            geometry: {
+              type: 'Polygon',
+              coordinates: [coordinates]
+            }
           }
-        }
-      ]
-    };
+        ]
+      };
   
-    if (map && draw) {
-      if (map.getLayer('editable-polygons')) {
-        map.removeLayer('editable-polygons');
+      if (map && draw) {
+        draw.add(initialPolygonData);
       }
-      if (map.getSource('editable-polygons')) {
-        map.removeSource('editable-polygons');
-      }
-  
-      map.addSource('editable-polygons', {
-        type: 'geojson',
-        data: initialPolygonData
-      });
-  
-      map.addLayer({
-        id: 'editable-polygons',
-        type: 'fill',
-        source: 'editable-polygons',
-        paint: {
-          'fill-color': 'transparent',
-          'fill-opacity': 0.5
-        }
-      });
-  
-      draw.add(initialPolygonData);
-  
-      map.on('draw.create', updateData);
-      map.on('draw.update', updateData);
-      map.on('draw.delete', updateData);
-  
-      function updateData() {
-        const data = draw.getAll();
-        map.getSource('editable-polygons').setData(data);
-      }
+
+      renderPolygons();
+    } else {
+      console.error('Invalid item or polygon data:', item);
     }
   };
-  
+
+  const deletePolygon = (deletedPoly: any) => { 
+    allPolys = allPolys.filter(item => item.id !== deletedPoly.id);
+
+    const listContainer1 = document.getElementById('title');
+    if (listContainer1) {
+      listContainer1.innerHTML = '';
+      allPolys.forEach((item) => {
+        const polyTitle = document.createElement('div');
+        polyTitle.textContent = `${item.name}`;
+        listContainer1.appendChild(polyTitle);
+      });
+    }
+    const listContainer2 = document.getElementById('edit');
+    if (listContainer2) {
+      listContainer2.innerHTML = '';
+      allPolys.forEach((item) => {
+        const editButton = document.createElement('button');
+        editButton.textContent = `Edit`;
+        editButton.addEventListener('click', () => editPolygon(item));
+        listContainer2.appendChild(editButton);
+      });
+    }
+    const listContainer3 = document.getElementById('delete');
+    if (listContainer3) {
+      listContainer3.innerHTML = '';
+      allPolys.forEach((item) => {
+        const deleteButton = document.createElement('button');
+        deleteButton.textContent = `Delete`;
+        deleteButton.addEventListener('click', () => deletePolygon(item));
+        listContainer3.appendChild(deleteButton);
+      });
+    }
+  };
+
   return (
     <div>
       <div id="map" style={{ width: '1000px', height: '600px' }}></div>
       <button onClick={handleDrawButtonClick}>Draw Polygon</button>
       <button onClick={handleDeleteButtonClick}>Delete All</button>
       <br />
-      <input type="text" onChange={(e) => { name = e.target.value }} />
-      <button onClick={handleSaveButtonClick}>Save Polygon</button>
-      <div id="32544"></div>
+      <form onSubmit={(e) => {e.preventDefault();handleSaveButtonClick();e.target.reset();}}>
+        <input type="text" onChange={(e) => { name = e.target.value }} />
+        <button type='submit'>Save Polygon</button>
+      </form>
+      <div>
+        <div id="title"></div>
+        <div id="edit"></div>
+        <div id="delete"></div>
+      </div>
     </div>
   );
 };
