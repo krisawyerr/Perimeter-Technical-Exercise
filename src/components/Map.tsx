@@ -52,6 +52,23 @@ const Map: React.FC = () => {
     };
   }, []);
 
+  const handleError = (errorMessage: string) => {
+    const listContainer = document.getElementById('error');
+    if (listContainer) {
+      listContainer.innerHTML = '';
+      const div = document.createElement('div');
+      div.classList.add('error');
+  
+      const messageElement = document.createElement('div');
+      messageElement.textContent = errorMessage;
+      messageElement.classList.add('leftExistingPolygon');
+      div.appendChild(messageElement);
+  
+      listContainer.appendChild(div);
+    }
+  };
+  
+
   const handleDrawButtonClick = () => {
     if (draw) {
       draw.changeMode('draw_polygon');
@@ -67,13 +84,23 @@ const Map: React.FC = () => {
   };
 
   const handleSaveButtonClick = () => {
+    console.log(poly)
+    console.log(pastPoly.length)
+
     if (name) {
       let newPolygonItem;
   
       if (poly.length > 0) {
         newPolygonItem = { id: poly[poly.length - 1].id, name: name, polygon: poly[poly.length - 1].geometry };
+        handleError("")
       } else if (pastPoly) {
-        newPolygonItem = { id: pastPoly.id, name: name, polygon: pastPoly.polygon };
+        if (pastPoly.length === 0) {
+          handleError("Draw a polygon to submit!")
+          name = '';
+        } else {
+          newPolygonItem = { id: pastPoly.id, name: name, polygon: pastPoly.polygon };
+          handleError("")
+        }
       }
       
       if (newPolygonItem) {
@@ -90,6 +117,16 @@ const Map: React.FC = () => {
         }
       } else {
         console.error('No polygon data found to save.');
+      }
+    } else {
+      if (poly.length > 0) {
+        handleError("Enter name to submit!")
+      } else if (pastPoly) {
+        if (pastPoly.length === 0) {
+          handleError("Enter name and draw polygon to submit!")
+        } else {
+          handleError("Enter name to submit!")
+        }
       }
     }
   };
@@ -219,23 +256,31 @@ const Map: React.FC = () => {
 
   return (
     <div className='pageGrid'>
-      <div>
-        <div id="map"></div>
+      <div id="map"></div>
+      {/* <div className='mapMenu'> */}
         <div className='mapButtons'>
           <div className='leftMapButtons'>
             <img onClick={handleDrawButtonClick} src="src/assets/draw.svg" alt="Draw" title="Draw polygon"/>
             <img onClick={handleDeleteButtonClick} src="src/assets/trash.svg" alt="Delete" title="Delete drawing"/>
           </div>
-          <form onSubmit={(e) => { e.preventDefault(); handleSaveButtonClick(); const formElement = e.target as HTMLFormElement; formElement.reset(); }} className='rightMapButtons'>
+          {/* <form onSubmit={(e) => { e.preventDefault(); handleSaveButtonClick(); const formElement = e.target as HTMLFormElement; formElement.reset(); }} className='rightMapButtons'>
             <input type="text" onChange={(e) => { name = e.target.value }} placeholder='Enter name'/>
             <button type='submit'>Save Polygon</button>
-          </form>
+          </form> */}
         </div>
-      </div>
-      <div className='existingPolygons'>
-        <h1>Saved Polygons</h1>
-        <div id="polygons"></div>
-      </div>
+        
+          <div className='existingPolygons'>
+            <div className='existingPolygonsContainer'>
+              <h1>Save Polygon:</h1>
+              <form onSubmit={(e) => { e.preventDefault(); handleSaveButtonClick(); const formElement = e.target as HTMLFormElement; formElement.reset(); }} className='rightMapButtons'>
+                <input type="text" onChange={(e) => { name = e.target.value }} placeholder='Enter name'/>
+                <button type='submit'>Save Polygon</button>
+              </form>
+              <div id="error"></div>
+              <div id="polygons"></div>
+            </div>
+          </div>        
+      {/* </div> */}
     </div>
   );
 };

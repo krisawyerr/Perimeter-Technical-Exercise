@@ -5,7 +5,7 @@
 
   color-scheme: light dark;
   color: rgba(255, 255, 255, 0.87);
-  background-color: #5c5c5c;
+  background-color: #242424;
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -267,58 +267,85 @@ button:focus-visible {
   }
 } */
 
-.error {
-  color: red;
-  font-weight: 400;
-}
-
 @media screen and (max-width: 1164px) {
-  #map {
-    position: absolute;
-    overflow: hidden;
-    top: 0;
-    left: 0;
+  .existingPolygon {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border: 2px solid #1a1a1a;
+    margin-bottom: 5px;
+    padding: 10px;
+  }
+  .existingPolygon:hover {
+    border-color: #646cff;
+    transition: border-color 1s;
+  }
   
-    width: 100%;
-    height: 500px;
+  .existingPolygon button {
+    margin-left: 10px;
+  }
+  
+  .mapButtons {
+    margin-top: 15px;
+    display: flex;
+    justify-content: space-between;
+  }
+  
+  .leftMapButtons img {
+    margin-right: 10px;
+  }
+  
+  .rightMapButtons button {
+    margin-left: 10px;
+  }
+  
+  #polygons {
+    margin-top: 10px;
+    width: 80%;
+  }
+  
+  .icon {
+    color: #535bf2;
+    width: 50px;
+    height: 50px;
+  }
+  
+  .rightExistingPolygon {
+    display: flex;
+    align-items: center;
+  }
+  
+  .header {
+    position: absolute;
+    top: 0%;
+    left: 0%;
+  
+    background-color: #1a1a1a;
+    width: calc(100vw - 100px);
+    padding: 20px 50px;
+  
+    display: flex;
+    overflow: hidden;
+  }
+  
+  #map {
+    width: 750px;
+    height: 450px;
   }
   .mapboxgl-canvas {
-    width: 100%;
-    height: 500px;
+    width: 750px;
+    height: 450px;
+  }
+
+  .pageGrid {
+    display: flex;
+    flex-direction: column;
   }
 
   .existingPolygons {
-    background-color: transparent;
-    /* padding: 10px; */
-    /* position: absolute; */
-    left: 0;
-    top: 508px;
-    width: calc(100% - 20px);
-
-    /* z-index: 1000;
-    display: flex;
-    flex-direction: column; */
-    align-items: center;
-  
-    max-height: none;
-    overflow-y: unset;
-    /* scrollbar-width: none; 
-    -ms-overflow-style: none; */
-  }
-
-  .existingPolygonsContainer {
-    width: 400px;
     display: flex;
     flex-direction: column;
     align-items: center;
-  }
-}
-
-@media screen and (max-width: 415px) {
-  .existingPolygonsContainer {
-    width: 375px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+    margin-top: 50px;
   }
 }

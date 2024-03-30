@@ -5,7 +5,7 @@ function App() {
   return (
     <div>
       <div className='header'>
-        <h1>Perimeter Technical Exercise</h1>
+        <h1>Polygon Mapper</h1>
       </div>
       <Map />
     </div>
