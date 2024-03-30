@@ -95,11 +95,6 @@ const Map: React.FC = () => {
   };
 
   const handleSaveButtonClick = () => {
-    /* console.log(poly)
-    console.log(typeof(pastPoly))
-    console.log(typeof(poly)) */
-
-
     let pastPolyEmpty = pastPoly ? "filled" : "empty"
     console.log(pastPolyEmpty)
     if (name) {
@@ -184,14 +179,14 @@ const Map: React.FC = () => {
   const editPolygon = (item: any) => {  
     pastPoly = item;
     if (item && item.polygon && item.polygon.coordinates) {
-      polyId = item.id as string; // Type assertion for id
+      polyId = item.id as string; 
       if (draw) {
         draw.deleteAll();
       }
 
       const inputElement = document.querySelector('input[type="text"]') as HTMLInputElement | null;
       if (inputElement) {
-        inputElement.value = item.name as string; // Type assertion for name
+        inputElement.value = item.name as string; 
       }
 
       name = item.name as string;
@@ -230,11 +225,16 @@ const Map: React.FC = () => {
     } else {
       console.error('Invalid item or polygon data:', item);
     }
-};
+  };
 
 
   const deletePolygon = (deletedPoly: any) => { 
     allPolys = allPolys.filter(item => item.id !== deletedPoly.id);
+    const inputElement = document.querySelector('input[type="text"]') as HTMLInputElement | null;
+    if (inputElement) {
+      inputElement.value = ''; 
+    }
+    handleDeleteButtonClick();
 
     const listContainer1 = document.getElementById('polygons');
     if (listContainer1) {
@@ -273,18 +273,12 @@ const Map: React.FC = () => {
   return (
     <div className='pageGrid'>
       <div id="map"></div>
-      {/* <div className='mapMenu'> */}
         <div className='mapButtons'>
           <div className='leftMapButtons'>
             <img onClick={handleDrawButtonClick} src="/assets/draw.svg" alt="Draw" title="Draw polygon"/>
             <img onClick={handleDeleteButtonClick} src="/assets/trash.svg" alt="Delete" title="Delete drawing"/>
           </div>
-          {/* <form onSubmit={(e) => { e.preventDefault(); handleSaveButtonClick(); const formElement = e.target as HTMLFormElement; formElement.reset(); }} className='rightMapButtons'>
-            <input type="text" onChange={(e) => { name = e.target.value }} placeholder='Enter name'/>
-            <button type='submit'>Save Polygon</button>
-          </form> */}
         </div>
-        
           <div className='existingPolygons'>
             <div className='existingPolygonsContainer'>
               <h1>Save Polygon:</h1>
@@ -296,7 +290,6 @@ const Map: React.FC = () => {
               <div id="polygons"></div>
             </div>
           </div>        
-      {/* </div> */}
     </div>
   );
 };
