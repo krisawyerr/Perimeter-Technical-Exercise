@@ -167,19 +167,19 @@ const Map: React.FC = () => {
   };
 
   const editPolygon = (item: any) => {  
-    pastPoly = item
+    pastPoly = item;
     if (item && item.polygon && item.polygon.coordinates) {
-      polyId = item.id;
+      polyId = item.id as string; // Type assertion for id
       if (draw) {
         draw.deleteAll();
       }
 
       const inputElement = document.querySelector('input[type="text"]') as HTMLInputElement | null;
       if (inputElement) {
-        inputElement.value = item.name;
+        inputElement.value = item.name as string; // Type assertion for name
       }
 
-      name = item.name;
+      name = item.name as string;
 
       const coordinates = item.polygon.coordinates[0];
 
@@ -215,7 +215,8 @@ const Map: React.FC = () => {
     } else {
       console.error('Invalid item or polygon data:', item);
     }
-  };
+};
+
 
   const deletePolygon = (deletedPoly: any) => { 
     allPolys = allPolys.filter(item => item.id !== deletedPoly.id);
