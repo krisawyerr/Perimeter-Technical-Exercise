@@ -167,7 +167,7 @@ const Map: React.FC = () => {
         leftSide.appendChild(polyTitle);
 
         const deleteButton = document.createElement('img');
-        deleteButton.src = 'src/assets/trash.svg';
+        deleteButton.src = '/assets/trash.svg';
         deleteButton.alt = 'Delete'; 
         deleteButton.title = 'Delete polygon'; 
         deleteButton.addEventListener('click', (event) => {
@@ -256,7 +256,7 @@ const Map: React.FC = () => {
         leftSide.appendChild(polyTitle);
 
         const deleteButton = document.createElement('img');
-        deleteButton.src = 'src/assets/trash.svg';
+        deleteButton.src = '/assets/trash.svg';
         deleteButton.alt = 'Delete'; 
         deleteButton.title = 'Delete polygon'; 
         deleteButton.addEventListener('click', (event) => {
@@ -276,8 +276,8 @@ const Map: React.FC = () => {
       {/* <div className='mapMenu'> */}
         <div className='mapButtons'>
           <div className='leftMapButtons'>
-            <img onClick={handleDrawButtonClick} src="src/assets/draw.svg" alt="Draw" title="Draw polygon"/>
-            <img onClick={handleDeleteButtonClick} src="src/assets/trash.svg" alt="Delete" title="Delete drawing"/>
+            <img onClick={handleDrawButtonClick} src="/assets/draw.svg" alt="Draw" title="Draw polygon"/>
+            <img onClick={handleDeleteButtonClick} src="/assets/trash.svg" alt="Delete" title="Delete drawing"/>
           </div>
           {/* <form onSubmit={(e) => { e.preventDefault(); handleSaveButtonClick(); const formElement = e.target as HTMLFormElement; formElement.reset(); }} className='rightMapButtons'>
             <input type="text" onChange={(e) => { name = e.target.value }} placeholder='Enter name'/>
