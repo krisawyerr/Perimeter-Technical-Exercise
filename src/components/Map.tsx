@@ -2,11 +2,22 @@ import React, { useEffect } from 'react';
 import mapboxgl from 'mapbox-gl';
 import MapboxDraw from '@mapbox/mapbox-gl-draw';
 
+interface Polygon {
+  type: string;
+  coordinates: number[][][];
+}
+
+interface PolygonItem {
+  id: string;
+  name: string;
+  polygon: Polygon;
+}
+
 const Map: React.FC = () => {
   let map: mapboxgl.Map | null = null;
   let draw: MapboxDraw | null = null;
   let poly: any[] = [];
-  let pastPoly: any[] = [];
+  let pastPoly: PolygonItem | null = null;
   let name: string = '';
   let polyId: string = '';
   let allPolys: any[] = [];
@@ -84,9 +95,13 @@ const Map: React.FC = () => {
   };
 
   const handleSaveButtonClick = () => {
-    console.log(poly)
-    console.log(pastPoly.length)
+    /* console.log(poly)
+    console.log(typeof(pastPoly))
+    console.log(typeof(poly)) */
 
+
+    let pastPolyEmpty = pastPoly ? "filled" : "empty"
+    console.log(pastPolyEmpty)
     if (name) {
       let newPolygonItem;
   
@@ -94,7 +109,7 @@ const Map: React.FC = () => {
         newPolygonItem = { id: poly[poly.length - 1].id, name: name, polygon: poly[poly.length - 1].geometry };
         handleError("")
       } else if (pastPoly) {
-        if (pastPoly.length === 0) {
+        if (pastPolyEmpty === "empty") {
           handleError("Draw a polygon to submit!")
           name = '';
         } else {
@@ -116,13 +131,13 @@ const Map: React.FC = () => {
           draw.deleteAll();
         }
       } else {
-        console.error('No polygon data found to save.');
+        handleError("Draw a polygon to submit!")
       }
     } else {
       if (poly.length > 0) {
         handleError("Enter name to submit!")
-      } else if (pastPoly) {
-        if (pastPoly.length === 0) {
+      } else {
+        if (pastPolyEmpty === "empty") {
           handleError("Enter name and draw polygon to submit!")
         } else {
           handleError("Enter name to submit!")
