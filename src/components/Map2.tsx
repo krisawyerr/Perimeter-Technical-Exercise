@@ -5,8 +5,8 @@ import MapboxDraw from '@mapbox/mapbox-gl-draw';
 const Map: React.FC = () => {
   let map: mapboxgl.Map | null = null;
   let draw: MapboxDraw | null = null;
-  let poly: any[] = [];
-  let pastPoly: any[] = [];
+  let poly: any | null = null;
+  let pastPoly: any | null = null;
   let name: string = '';
   let polyId: string = '';
   let allPolys: any[] = [];
